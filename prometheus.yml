@@ -21,7 +21,7 @@ scrape_configs:
       module: [http_2xx_example]
     static_configs:
       - targets:
-          - http://host.docker.internal:8080/  # Your server URL (use host.docker.internal to reach host machine)
+          # - http://host.docker.internal:8080/  # Your server URL (use host.docker.internal to reach host machine)
           - https://pointsystem-fe.adeed.sa/health
     relabel_configs:
       - source_labels: [__address__]
