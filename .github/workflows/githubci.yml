@@ -2,11 +2,9 @@ name: CI/CD
 
 on:
   push:
-    branches:
-      - forked-main
+    branches: [master]
   pull_request:
-    branches:
-      - forked-main
+    branches: [master]
 
 jobs:
   build:
