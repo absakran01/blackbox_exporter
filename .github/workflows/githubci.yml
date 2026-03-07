@@ -57,53 +57,20 @@ jobs:
     needs: [test]
     runs-on: ubuntu-latest
     steps:
-      - name: Download built binary
-        uses: actions/download-artifact@v4
-        with:
-          name: myapp-binary
-          path: dist
+      - name: Check out code
+        uses: actions/checkout@v4
 
-      - name: Copy binary to Droplet
+      - name: Copy project files to Droplet
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          source: "dist/myapp"
-          target: "/tmp"
+          source: "."
+          target: "/opt/myapp"
 
-deploy:
-  name: Deploy
-  if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-  needs: [test]
-  runs-on: ubuntu-latest
-  steps:
-    - name: Check out code
-      uses: actions/checkout@v4
-
-    - name: Copy project files to Droplet
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        source: "."
-        target: "/opt/myapp"
-
-    - name: Run Docker Compose
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USER }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        port: ${{ secrets.SSH_PORT }}
-        script: |
-          set -e
-          cd /opt/myapp
-          docker compose down
-          docker compose up -d --build
+      - name: Set up environment variables
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -112,12 +79,24 @@ deploy:
           port: ${{ secrets.SSH_PORT }}
           script: |
             set -e
+            cd /opt/myapp
+            cat > .env << EOF
+            SMTP_HOST=${{ secrets.SMTP_HOST }}
+            SMTP_FROM=${{ secrets.SMTP_FROM }}
+            SMTP_USERNAME=${{ secrets.SMTP_USERNAME }}
+            SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+            ALERT_EMAIL_TO=${{ secrets.ALERT_EMAIL_TO }}
+            EOF
 
-            sudo mkdir -p ${{ secrets.APP_DIR }}/releases
-            sudo mv /tmp/dist/myapp ${{ secrets.APP_DIR }}/releases/myapp-${{ github.sha }}
-            sudo chmod +x ${{ secrets.APP_DIR }}/releases/myapp-${{ github.sha }}
-
-            sudo ln -sfn ${{ secrets.APP_DIR }}/releases/myapp-${{ github.sha }} ${{ secrets.APP_DIR }}/current
-
-            sudo systemctl restart myapp
-            sudo systemctl status myapp --no-pager
+      - name: Run Docker Compose
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd /opt/myapp
+            docker compose down
+            docker compose up -d --build
