@@ -8,7 +8,7 @@ modules:
       method: GET
       headers:
         Host: pointsystem-fe.adeed.sa
-        Origin: absakran01
+        Origin: localhost
       http_headers:
         Accept-Language:
           values:
@@ -28,7 +28,7 @@ modules:
       method: GET
       headers:
         Host: https://pms.adeed.sa/
-        Origin: absakran01
+        Origin: localhost
       http_headers:
         Accept-Language:
           values:
