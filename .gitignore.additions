@@ -1,0 +1,7 @@
+# Generated YAML files (from templates)
+alertmanager.yml
+
+# Do NOT commit .env files with secrets
+.env
+.env.local
+.env.*.local
