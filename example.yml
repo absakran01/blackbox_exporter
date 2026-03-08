@@ -4,11 +4,8 @@ modules:
     timeout: 10s
     http:
       valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
-      valid_status_codes: [200]  # Defaults to 2xx
+      valid_status_codes: [200]
       method: GET
-      headers:
-        Host: pointsystem-fe.adeed.sa
-        Origin: localhost
       http_headers:
         Accept-Language:
           values:
@@ -24,11 +21,8 @@ modules:
     timeout: 10s
     http:
       valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
-      valid_status_codes: [200]  # Defaults to 2xx
+      valid_status_codes: [200]
       method: GET
-      headers:
-        Host: https://pms.adeed.sa/
-        Origin: localhost
       http_headers:
         Accept-Language:
           values:

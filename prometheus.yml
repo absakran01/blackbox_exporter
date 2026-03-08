@@ -18,11 +18,25 @@ scrape_configs:
   - job_name: 'blackbox'
     metrics_path: /probe
     params:
-      module: [http_2xx_example]
+      module: [http_200_pointsystem]
     static_configs:
       - targets:
           # - http://host.docker.internal:8080/  # Your server URL (use host.docker.internal to reach host machine)
           - https://pointsystem-fe.adeed.sa/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox_exporter:9115  # Use Docker service name
+  - job_name: 'blackbox_http_200_pms'
+    metrics_path: /probe
+    params:
+      module: [http_200_pms]  # Use the module defined in blackbox.yml
+    static_configs:
+      - targets:
+          - https://pms.adeed.sa/health
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
