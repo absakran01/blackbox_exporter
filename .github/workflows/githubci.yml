@@ -88,6 +88,21 @@ jobs:
             ALERT_EMAIL_TO=${{ secrets.ALERT_EMAIL_TO }}
             EOF
 
+      - name: Generate YAML files from templates
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            set -e
+            cd /opt/myapp
+            # Load environment variables and generate YAML files
+            export $(cat .env | xargs)
+            envsubst < alertmanager.yml.template > alertmanager.yml
+            echo "✓ alertmanager.yml generated"
+
       - name: Run Docker Compose
         uses: appleboy/ssh-action@v1.0.3
         with:

@@ -1,9 +1,9 @@
 global:
   resolve_timeout: 5m
-  smtp_smarthost: 'smtp.gmail.com:587'
-  smtp_from: 'abdullmajeeda319@gmail.com'
-  smtp_auth_username: 'abdullmajeeda319@gmail.com'
-  smtp_auth_password: 'jnzz'
+  smtp_smarthost: '${SMTP_HOST}:587'
+  smtp_from: '${SMTP_FROM}'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
   smtp_require_tls: true
 
 route:
@@ -16,7 +16,7 @@ route:
 receivers:
   - name: 'email-and-console'
     email_configs:
-      - to: 'abdullmajeeda319@gmail.com'
+      - to: '${ALERT_EMAIL_TO}'
         send_resolved: true
         headers:
           Subject: 'ALERT: {{ .GroupLabels.alertname }} - {{ .GroupLabels.instance }}'
